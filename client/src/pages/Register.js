@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Form, Input, message } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-
+import Spinner from '../components/Spinner'
 
 const Register = () => {
     const navigate = useNavigate()
@@ -37,7 +37,7 @@ const Register = () => {
             </div>
             <div class="split right">
                 <div className='register-page'>
-             
+                    {loading && <Spinner></Spinner>}
                     <Form layout='vertical' onFinish={submitHandler}>
                         <h1>Become a user</h1>
                         <Form.Item label='Name' name='name'>
@@ -50,7 +50,7 @@ const Register = () => {
                             <Input type='password' />
                         </Form.Item>
                         <div className='d-flex justify-content-between'>
-                            <Link to="/">Already Register ? Click Here to Login</Link>
+                            <Link to="/login">Already Register ? Click Here to Login</Link>
                             <button className='btn btn-primary'>Register</button>
                         </div>
                     </Form>

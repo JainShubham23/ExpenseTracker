@@ -2,7 +2,7 @@ import React,{useState, useEffect} from 'react'
 import {Form, Input, message} from 'antd'
 import { Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'
-
+import Spinner from '../components/Spinner'
 //import compLogo from '../components/assets/logo.jpg';
 
 const Login = () => {
@@ -43,7 +43,7 @@ const navigate = useNavigate()
         </div>
         <div class="split right">
             <div className='register-page'>
-                
+                {loading && <Spinner></Spinner>}
                 <Form layout='vertical' onFinish={submitHandler}>
                     <h1>Welcome to Wall-E</h1>
                     <center><h2>Sign In</h2></center>

@@ -23,6 +23,11 @@ connectDb();
 //adding the routes
 //user route
 app.use('/api/v1/user', require('./routes/userRoute'))
+//transaction route
+app.use('/api/v1/transactions', require('./routes/transactionRoutes'))
+
+//static files
+app.use(express.static(path.join(__dirname, "./client/build")));
 
 
 //initializing the port - 8080 on development mode and in production takes from process.env
