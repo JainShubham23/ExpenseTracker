@@ -4,8 +4,8 @@ import Layout from './../components/Layout/Layout'
 import axios from 'axios'
 import Spinner from '../components/Spinner'
 import moment from 'moment'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-
+import { UnorderedListOutlined, AreaChartOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import Analytics from '../components/Analytics'
 
 const { RangePicker } = DatePicker;
 
@@ -14,7 +14,10 @@ const HomePage = () => {
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [allTransaction, setAllTransaction] = useState([])
-  
+  const [frequency, setFrequency] = useState('7')
+  const [selectedDate, setSelectedDate] = useState([])
+  const [type, setType] = useState('all')
+  const [viewData, setViewData] = useState('table')
   const [editable, setEditable] = useState(null)
 
   //table data
@@ -66,7 +69,29 @@ const HomePage = () => {
   //getall Transactions
 
 
- 
+  //useEffect
+  useEffect(() => {
+    const getAllTransaction = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'))
+        setLoading(true)
+        const res = await axios.post('/api/v1/transactions/get-transaction',
+          {
+            userid: user._id,
+            frequency,
+            selectedDate,
+            type,
+          })
+        setLoading(false)
+        setAllTransaction(res.data)
+        console.log(res.data)
+      } catch (error) {
+        console.log(error)
+        message.error('Failed to get transactions')
+      }
+    };
+    getAllTransaction();
+  }, [frequency, selectedDate, type])
 
   //Delete handler
   const handleDelete = async (record) => {
@@ -119,7 +144,40 @@ const HomePage = () => {
       <Layout>
         {loading && <Spinner></Spinner>}
         <div className='filters'>
-        
+          <div>
+            <h6>Select Frequency</h6>
+            <Select value={frequency} onChange={(values) => setFrequency(values)}>
+              <Select.Option value="7">Last 1 Week</Select.Option>
+              <Select.Option value="30">Last 1 Month</Select.Option>
+              <Select.Option value="365">Last 1 Year</Select.Option>
+              <Select.Option value="custom">Custom</Select.Option>
+            </Select>
+            {
+              frequency === 'custom' && <RangePicker
+                value={selectedDate}
+                onChange={(values) => setSelectedDate(values)}>
+              </RangePicker>
+            }
+          </div>
+          <div>
+            <h6>Select Type</h6>
+            
+            <Select value={type} onChange={(values) => setType(values)} >
+              <Select.Option value="all">ALL Types</Select.Option>
+              <Select.Option value="income">Income</Select.Option>
+              <Select.Option value="expense">Expense</Select.Option>
+            </Select>
+
+
+          </div>
+          <div className='switch-icons'>
+            <UnorderedListOutlined className={`mx-2 ${viewData === 'table' ? 'active-icon' : 'inactive-icon'}`}
+              onClick={() => setViewData('table')}></UnorderedListOutlined>
+              </div>
+              <div className='switch-icons'>
+            <AreaChartOutlined className={`mx-2 ${viewData === 'analytics' ? 'active-icon' : 'inactive-icon'}`}
+              onClick={() => setViewData('analytics')}></AreaChartOutlined>
+          </div>
 
 
           <div>
@@ -129,8 +187,8 @@ const HomePage = () => {
         </div>
 
         <div className='content'>
-         <Table columns={columns} dataSource={allTransaction} ></Table>
-           
+          {viewData === 'table' ? <Table columns={columns} dataSource={allTransaction} ></Table>
+            : <Analytics allTransaction={allTransaction}></Analytics>}
 
         </div>
 
